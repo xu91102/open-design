@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Open Design #8895 – exported HTML comparison</title>
+  <style>
+    * { box-sizing: border-box; }
+    body { margin: 24px auto; max-width: 1090px; padding: 0 20px; color: #17202c; background: #f8fafc; font: 16px/1.5 system-ui, sans-serif; }
+    h1 { margin-bottom: 8px; font-size: 27px; }
+    .panels { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; }
+    section { background: white; border: 1px solid #d2dce4; padding: 15px; border-radius: 7px; }
+    h2 { margin: 0 0 10px; font-size: 18px; }
+    iframe { width: 100%; height: 170px; border: 1px solid #d2dce4; }
+    pre { margin: 12px 0 0; white-space: pre-wrap; font-size: 14px; }
+  </style>
+  <script type="module">
+    for (const frame of document.querySelectorAll("iframe")) {
+      const show = () => {
+        const doc = frame.contentDocument;
+        if (!doc?.querySelector("#script-status")) return;
+        const styles = Array.from(doc.querySelectorAll("style"));
+        const theme = styles.some((style) => style.textContent.includes("theme fixture"));
+        const meta = styles.find((style) => style.textContent.includes("metadata control"));
+        frame.closest("section").querySelector("pre").textContent = [
+          "Encoded stylesheet inlined: " + (theme ? "yes" : "no"),
+          "Stylesheet title: " + (meta?.getAttribute("title") ?? "(missing)"),
+          "Stylesheet media: " + (meta?.getAttribute("media") ?? "(missing)"),
+          "Script: " + doc.querySelector("#script-status").textContent,
+        ].join("\n");
+      };
+      frame.addEventListener("load", show);
+      if (frame.contentDocument?.readyState === "complete") show();
+    }
+  </script>
+</head>
+<body>
+  <h1>Open Design #8895 · standalone HTML export</h1>
+  <p>Same HTML and asset files passed to the two revisions of <code>inlineRelativeAssets</code>.
+  The frames open the resulting standalone exports without the original sibling assets.</p>
+  <div class="panels">
+    <section><h2>Original main baseline · <code>93d4031</code></h2><iframe src="./before.html" title="Original export"></iframe><pre>Loading…</pre></section>
+    <section><h2>PR #8895 · <code>c18441d</code></h2><iframe src="./after.html" title="Fixed export"></iframe><pre>Loading…</pre></section>
+  </div>
+</body>
+</html>
